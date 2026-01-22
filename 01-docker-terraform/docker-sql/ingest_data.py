@@ -1,3 +1,4 @@
+import os
 import click
 import pandas as pd
 import pyarrow.parquet as pq
@@ -6,17 +7,16 @@ from tqdm.auto import tqdm
 import time
 
 @click.command()
-@click.option('--pg-user', default='postgres', help='PostgreSQL user')
-@click.option('--pg-pass', default='postgres', help='PostgreSQL password')
-@click.option('--pg-host', default='postgres', help='PostgreSQL host')
-@click.option('--pg-port', default=5432, type=int, help='PostgreSQL port')
-@click.option('--pg-db', default='ny_taxi', help='PostgreSQL database name')
-@click.option('--year', default=2025, type=int, help='Year of the data')
-@click.option('--month', default=11, type=int, help='Month of the data')
-@click.option('--target-table', default='green_taxi_data', help='Target table name')
-@click.option('--chunksize', default=100000, type=int, help='Chunk size for insertion')
-@click.option('--zones-url', default='https://github.com/DataTalksClub/nyc-tlc-data/releases/download/misc/taxi_zone_lookup.csv', 
-              help='URL for taxi zones CSV')
+@click.option('--pg-user', envvar='PG_USER', default='postgres')
+@click.option('--pg-pass', envvar='PG_PASS', default='postgres')
+@click.option('--pg-host', envvar='PG_HOST', default='postgres')
+@click.option('--pg-port', envvar='PG_PORT', default=5433, type=int)  # Click reads env var
+@click.option('--pg-db', envvar='PG_DB', default='ny_taxi')
+@click.option('--year', envvar='YEAR', default=2025, type=int)
+@click.option('--month', envvar='MONTH', default=11, type=int)
+@click.option('--target-table', envvar='TARGET_TABLE', default='green_taxi_data')
+@click.option('--chunksize', envvar='CHUNKSIZE', default=100000, type=int)
+@click.option('--zones-url', envvar='ZONES_URL', default='https://github.com/DataTalksClub/nyc-tlc-data/releases/download/misc/taxi_zone_lookup.csv')
 def run(pg_user, pg_pass, pg_host, pg_port, pg_db, year, month, target_table, chunksize, zones_url):
     """Ingest NYC taxi data from Parquet into PostgreSQL database."""
 
