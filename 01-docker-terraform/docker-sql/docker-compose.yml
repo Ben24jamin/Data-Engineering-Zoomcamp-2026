@@ -1,16 +1,16 @@
 services:
   postgres:
     container_name: postgres
-    image: postgres:17-alpine
+    image: postgres:18-alpine
     environment:
       - POSTGRES_USER=${PG_USER}
       - POSTGRES_PASSWORD=${PG_PASS}
       - POSTGRES_DB=${PG_DB}
     ports:
-      - "${PG_PORT}:5433"  
-    command: ["postgres", "-p", "5433"]  ##this explicitly tells Postgres to listen on port 5433 inside the container
+      - "${PG_PORT}:5432"  
+    #command: ["postgres", "-p", "5433"]  ##this explicitly tells Postgres to listen on port 5433 inside the container
     volumes:
-      - ny_taxi-vol-pgdata:/var/lib/postgresql/data
+      - ny_taxi_postgres_data:/var/lib/postgresql
     networks:
       - pg-network
     healthcheck:
@@ -43,11 +43,10 @@ services:
 
 volumes:
  ny_taxi-vol-pgdata:
-#name:  
- ny_taxi-vol-pgadmin_data:
-#name: 
 
-    
+ ny_taxi-vol-pgadmin_data:
+
+
 networks:
   pg-network:
     driver: bridge
