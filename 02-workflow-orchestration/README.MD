@@ -33,3 +33,5 @@ closest 1,925,152
 
 QUESTION 6
 Add a timezone property set to America/New_York in the Schedule trigger configuration
+
+
