@@ -1,0 +1,27 @@
+-- models/staging/int_trips_unioned.sql
+with green_data as (
+    select *, 
+        'Green' as service_type 
+    from {{ ref('stg_green_tripdata') }}
+), 
+
+yellow_data as (
+    select *, 
+        'Yellow' as service_type
+    from {{ ref('stg_yellow_tripdata') }}
+), 
+
+trips_unioned as (
+    select * from green_data
+    union all
+    select * from yellow_data
+)
+
+select
+    {{ dbt_utils.generate_surrogate_key([
+        'vendor_id',
+        'pickup_datetime',
+        'pickup_location_id',
+    ]) }} as trip_id,
+    *
+from trips_unioned

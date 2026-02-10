@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: staging
+    database: terraform-demo-485008
+    schema: 20260129_ny_taxi_gcp_dataset
+
+    tables:
+      - name: green_tripdata
+
+      - name: yellow_tripdata
