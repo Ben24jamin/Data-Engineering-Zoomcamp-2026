@@ -1,4 +1,4 @@
--- This macro will return the payment type as a i guess..
+-- This macro will return the payment type 
 
 {% macro get_payment_type_description(payment_type) -%}
 

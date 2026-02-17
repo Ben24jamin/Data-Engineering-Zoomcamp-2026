@@ -1,11 +1,10 @@
 
 
-with tripdata as (
-    select *,
-    row_number() over(partition by vendorid, tpep_pickup_datetime) as rn
-    from {{ source('staging', 'yellow_tripdata') }}
-    where vendorid is not null
+with source as (
+    select * 
+    from {{ source('raw', 'yellow_tripdata') }}
 ),
+
 
 renamed as (
     select
@@ -23,7 +22,7 @@ renamed as (
         store_and_fwd_flag,
         cast(passenger_count as integer) as passenger_count,
         cast(trip_distance as numeric) as trip_distance,
-        cast(1 as integer) as trip_type,   --green cabs allow hailing=1 and e-hailing=2 so we cast an extra column for yellow to be unioned in future 
+
 
         -- payment info
         cast(fare_amount as numeric) as fare_amount,
@@ -31,21 +30,14 @@ renamed as (
         cast(mta_tax as numeric) as mta_tax,
         cast(tip_amount as numeric) as tip_amount,
         cast(tolls_amount as numeric) as tolls_amount,
-        cast(0 as numeric) as ehail_fee, --here we also cast a column and give it a 0 value to match green taxis (yellow doesnt actually have e-hailing)
         cast(improvement_surcharge as numeric) as improvement_surcharge,
         cast(total_amount as numeric) as total_amount,
         cast(payment_type as integer) as payment_type,
-        {{ get_payment_type_description('payment_type') }} as payment_type_description
-    from tripdata
-    where rn = 1
+    from source
+     -- Filter out records with null vendor_id (data quality requirement)
+    where vendorid is not null
            )
 
 select * from renamed
-
--- dbt build --select <model_name> --vars '{"is_test_run": true}'
-{% if var('is_test_run', default =false) %}
-
-    limit 100
-
-{% endif %}
+where pickup_datetime >= '2019-01-01' and pickup_datetime <= '2020-12-31'
 

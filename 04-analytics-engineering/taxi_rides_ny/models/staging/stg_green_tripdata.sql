@@ -1,17 +1,15 @@
 
 
-with tripdata as (
-    select *,
-    row_number() over(partition by vendorid, lpep_pickup_datetime) as rn
-    from {{ source('staging', 'green_tripdata') }}
-    where vendorid is not null
+with source as (
+    select * 
+    from {{ source('raw', 'green_tripdata') }}
 ),
 
 renamed as (
     select
         -- identifiers
         cast(vendorid as integer) as vendor_id,
-        cast(ratecodeid as integer) as rate_code_id,
+        {{ safe_cast('ratecodeid', 'integer') }} as rate_code_id,
         cast(pulocationid as integer) as pickup_location_id,
         cast(dolocationid as integer) as dropoff_location_id,
 
@@ -23,7 +21,7 @@ renamed as (
         store_and_fwd_flag,
         cast(passenger_count as integer) as passenger_count,
         cast(trip_distance as numeric) as trip_distance,
-        cast(trip_type as integer) as trip_type,
+        {{ safe_cast('trip_type', 'integer') }} as trip_type,
 
         -- payment info
         cast(fare_amount as numeric) as fare_amount,
@@ -34,17 +32,11 @@ renamed as (
         safe_cast(ehail_fee as numeric) as ehail_fee,
         cast(improvement_surcharge as numeric) as improvement_surcharge,
         cast(total_amount as numeric) as total_amount,
-        cast(payment_type as integer) as payment_type,
-        {{ get_payment_type_description('payment_type') }} as payment_type_description
-    from tripdata
-    where rn = 1
+        cast(payment_type as integer) as payment_type
+    from source
+     -- Filter out records with null vendor_id (data quality requirement)
+    where vendorid is not null
            )
 
 select * from renamed
-
--- dbt build --select <model_name> --vars '{"is_test_run": true}'
-{% if var('is_test_run', default =false) %}
-
-    limit 100
-
-{% endif %}
+where pickup_datetime >= '2019-01-01' and pickup_datetime <= '2020-12-31'

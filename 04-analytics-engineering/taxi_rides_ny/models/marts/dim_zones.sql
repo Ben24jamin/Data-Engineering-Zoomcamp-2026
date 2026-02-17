@@ -1,3 +1,4 @@
+--Uses the csv seed with zone data
 select
     locationid as location_id,
     borough,
