@@ -3,16 +3,17 @@ we needed more data so we created "gcs__bq_taxi_backfill.yml" for kestra
 this is used to ingest all the relevant tripdata for the project
 fhv 
 yellow 
-green tripdata is loaded in bucket and then merged into bq tables which we can load into dbt for transformation
+green 
+tripdata is loaded in bucket and then merged into bq tables which we can load into dbt for transformation
 
 Initially i found using the Parquets very problematic because of schema drift.
+So instead we used the csv.
 
-so instead we used the csv.
 
 
-Given a dbt project with the following structure:
 
 QUESTION 1
+Given a dbt project with the following structure:
 models/
 ├── staging/
 │   ├── stg_green_tripdata.sql
@@ -23,7 +24,7 @@ If you run dbt run --select int_trips_unioned, what models will be built?
 
 stg_green_tripdata, stg_yellow_tripdata, and int_trips_unioned (upstream dependencies)
 
-Question 2. dbt Tests
+QUESTION 2  dbt Tests
 You've configured a generic test like this in your schema.yml:
 
 columns:
