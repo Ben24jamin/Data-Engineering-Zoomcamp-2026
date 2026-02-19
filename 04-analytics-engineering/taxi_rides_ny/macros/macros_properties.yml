@@ -1,0 +1,45 @@
+macros:
+  - name: get_trip_duration_minutes
+    description: >
+      Calculates trip duration in minutes from pickup and dropoff timestamps.
+      This macro is cross-database compatible, supporting both DuckDB and BigQuery.
+      Returns a numeric value representing the duration in minutes.
+    arguments:
+      - name: pickup_datetime
+        type: timestamp
+        description: The pickup timestamp
+      - name: dropoff_datetime
+        type: timestamp
+        description: The dropoff timestamp
+
+  - name: get_vendor_data
+    description: >
+      Generates a CASE statement that maps vendor_id to vendor_name.
+      This macro is cross-database compatible and generates SQL at compile time using a Jinja dictionary.
+      Supports vendor IDs: 1 (Creative Mobile Technologies), 2 (Curb Mobility LLC), 4 (Unknown/Other), 6 (Myle Technologies Inc),
+                           7 (Helix)
+    arguments:
+      - name: vendor_id_column
+        type: integer
+        description: The column name containing the vendor ID
+
+  - name: get_ratecode_type
+    description: >
+      Generates a CASE statement that maps rate_code_id the name of the final rate code type in effect at the end of the trip.
+      This macro is cross-database compatible and generates SQL at compile time using a Jinja dictionary.
+      Supports ratecode IDs : 1 (Standard rate), 2 (JFK), 3 (Newark) ,4 (Nassau or Westchester) ,5 (Negotiated fare) ,6 (Group ride), 99 (Null/unknown).
+
+    arguments:
+      - name: rate_code_id
+        type: integer
+        description: The column name containing the ratecode ID
+
+  - name: get_payment_type_description
+    description: >
+      Generates a CASE statement that maps payment_type with a description of what it is.
+      Supports payment_types : 0 (Flex Fare trip), 1 (Credit card), 2 (Cash), 3 (No charge), 4 (Dispute), 5 (Unknown), 6 (Voided trip)
+
+    arguments:
+      - name: payment_type
+        type: integer
+        description: The column name containing the payment_type integer

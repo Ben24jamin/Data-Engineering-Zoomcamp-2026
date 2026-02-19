@@ -1,0 +1,38 @@
+id: gcs_taxi_zones
+namespace: zoomcamp
+description: |
+  The csv Data file used on the TLC Website for the zones
+
+variables:
+  source_url: "https://d37ci6vzurychx.cloudfront.net/misc/taxi_zone_lookup.csv"
+  filename: "taxi_zone_lookup.csv"
+  gcs_file: "gs://{{kv('GCP_BUCKET_NAME')}}/{{vars.filename}}"
+  table: "{{kv('GCP_DATASET')}}.taxi_zone_lookup"
+
+tasks:
+  - id: set_label
+    type: io.kestra.plugin.core.execution.Labels
+    labels:
+      file: "{{render(vars.filename)}}"
+     
+  - id: extract
+    type: io.kestra.plugin.scripts.shell.Commands
+    outputFiles:
+      - "*.csv"
+    taskRunner:
+      type: io.kestra.plugin.core.runner.Process
+    commands:
+      - wget -q -O "{{vars.filename}}" "{{vars.source_url}}"
+                    
+  - id: upload_to_gcs
+    type: io.kestra.plugin.gcp.gcs.Upload
+    from: "{{outputs.extract.outputFiles[vars.filename]}}"
+    to: "{{render(vars.gcs_file)}}"
+
+
+pluginDefaults:
+  - type: io.kestra.plugin.gcp
+    values:
+      serviceAccount: "{{secret('GCP_SERVICE_ACCOUNT')}}"
+      projectId: "{{kv('GCP_PROJECT_ID')}}"
+      location: "{{kv('GCP_LOCATION')}}"
