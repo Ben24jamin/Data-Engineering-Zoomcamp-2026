@@ -83,8 +83,11 @@ Filter out records where dispatching_base_num IS NULL
 Rename fields to match your project's naming conventions (e.g., PUlocationID → pickup_location_id)
 What is the count of records in stg_fhv_tripdata?
 
-my answer   19,312,530 from dbt staged no duplicates and filtered by dates 
-            20,101,477 from kestra-bigquery merged data no(nulls) on dispatching_base_num
+my answer   
+19312530 from dbt staged no duplicates and filtered by dates 
+20101477 from kestra-bigquery merged data no(nulls) on dispatching_base_num
+
+I couldnt find an answer close to the below ?
 
 42,084,899
 43,244,693
