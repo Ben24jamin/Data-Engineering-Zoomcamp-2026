@@ -25,7 +25,7 @@ OPTIONS (
   uris = ['gs://20260129-ny-taxi-gcp-bucket/*.parquet']
 );
 
-now to have this table in BigQuery Itself run the below
+now to have this table in BigQuery Itself(materialised) run the below
 
 CREATE OR REPLACE TABLE `terraform-demo-485008.20260129_ny_taxi_gcp_dataset.yellow_tripdata`
 AS
