@@ -3,16 +3,17 @@ we needed more data so we created "gcs__bq_taxi_backfill.yml" for kestra
 this is used to ingest all the relevant tripdata for the project
 fhv 
 yellow 
-green tripdata is loaded in bucket and then merged into bq tables which we can load into dbt for transformation
+green 
+tripdata is loaded in bucket and then merged into bq tables which we can load into dbt for transformation
 
 Initially i found using the Parquets very problematic because of schema drift.
+So instead we used the csv.
 
-so instead we used the csv.
 
 
-Given a dbt project with the following structure:
 
 QUESTION 1
+Given a dbt project with the following structure:
 models/
 ├── staging/
 │   ├── stg_green_tripdata.sql
@@ -23,7 +24,7 @@ If you run dbt run --select int_trips_unioned, what models will be built?
 
 stg_green_tripdata, stg_yellow_tripdata, and int_trips_unioned (upstream dependencies)
 
-Question 2. dbt Tests
+QUESTION 2  dbt Tests
 You've configured a generic test like this in your schema.yml:
 
 columns:
@@ -83,8 +84,11 @@ Filter out records where dispatching_base_num IS NULL
 Rename fields to match your project's naming conventions (e.g., PUlocationID → pickup_location_id)
 What is the count of records in stg_fhv_tripdata?
 
-my answer   19,312,530 from dbt staged no duplicates and filtered by dates 
-            20,101,477 from kestra-bigquery merged data no(nulls) on dispatching_base_num
+my answer   
+19312530 from dbt staged no duplicates and filtered by dates 
+20101477 from kestra-bigquery merged data no(nulls) on dispatching_base_num
+
+I couldnt find an answer close to the below ?
 
 42,084,899
 43,244,693
